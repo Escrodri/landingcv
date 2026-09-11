@@ -1,16 +1,17 @@
 # Landing Page — Confección de Currículums
 
-Landing page moderna y de alta conversión desarrollada para la oferta de servicios de diseño y redacción de currículums profesionales, con contacto directo e integración vía WhatsApp.
+Landing page moderna y de alta conversión para la oferta de servicios de diseño y redacción de currículums profesionales, con contacto directo e integración vía WhatsApp.
 
 ---
 
 ## Características
 
-- **Diseño orientado a conversión:** Interfaz atractiva y optimizada para dispositivos móviles (mobile-first).
-- **Segmentación por rubros:** Soporte de rutas dinámicas para campañas específicas según el área laboral del postulante.
+- **Diseño orientado a conversión:** Interfaz responsive optimizada para dispositivos móviles (mobile-first).
+- **Segmentación por rubros:** Rutas dinámicas dedicadas para anuncios según el área laboral del postulante.
 - **Integración con WhatsApp:** Generación automática de mensajes personalizados y seguimiento de parámetros de referencia (`?ref=`).
-- **Disponibilidad en tiempo real:** Detección automática del estado del servicio ("Atendiendo ahora" o próximo horario de apertura) según la hora local.
-- **Rendimiento y SEO:** Carga ultrarrápida, metaetiquetas Open Graph completas, favicon multirresolución y soporte para Pixel de seguimiento.
+- **Disponibilidad en tiempo real:** Detección automática del estado de atención según la hora local.
+- **Optimización para compartir (Open Graph):** Imagen de vista previa y metadatos optimizados para WhatsApp y redes sociales.
+- **Rendimiento:** Carga rápida construida como SPA con Vite y React 19.
 
 ---
 
@@ -18,7 +19,7 @@ Landing page moderna y de alta conversión desarrollada para la oferta de servic
 
 - **Framework:** [React 19](https://react.dev/)
 - **Lenguaje:** [TypeScript](https://www.typescriptlang.org/)
-- **Empaquetador y entorno:** [Vite](https://vite.dev/)
+- **Empaquetador:** [Vite](https://vite.dev/)
 - **Estilos:** [Tailwind CSS v4](https://tailwindcss.com/)
 - **Enrutamiento:** [React Router](https://reactrouter.com/)
 
@@ -68,11 +69,11 @@ Landing page moderna y de alta conversión desarrollada para la oferta de servic
 ## Estructura del Proyecto
 
 ```text
-├── public/              # Favicons, manifest, imágenes sociales y estáticos
+├── public/              # Favicons, manifest, imágenes sociales (og-cv.jpg) y estáticos
 ├── scripts/             # Herramientas para generación y optimización de assets
 ├── src/
 │   ├── assets/          # Imágenes de ejemplos de CV, logos y recursos visuales
-│   ├── pages/           # Vistas principales (Home, NotFound, etc.)
+│   ├── pages/           # Vistas principales (Home, NotFound)
 │   ├── campanias.ts     # Configuración de titulares y textos por cada rubro
 │   ├── config.ts        # Datos del servicio (contacto, precios, horarios, entregas)
 │   ├── styles.css       # Configuración global y tokens de estilo
@@ -86,19 +87,30 @@ Landing page moderna y de alta conversión desarrollada para la oferta de servic
 
 ## Configuración del Servicio
 
-Toda la parametrización del negocio se gestiona de forma centralizada en `src/config.ts`:
+La parametrización del negocio se gestiona de forma centralizada en `src/config.ts`:
 
-- **Canal de atención:** Número y enlace directo para recepción de solicitudes vía WhatsApp.
-- **Servicios y precios:** Catálogo de opciones de CV, detalles incluidos y extras disponibles.
-- **Horarios de atención:** Franja horaria para el indicador dinámico de respuesta en la cabecera.
+- **Canal de atención:** Número y enlaces directos de WhatsApp.
+- **Dominio:** Configuración del dominio de producción (`cv.pediloaqui.online`).
+- **Servicios y precios:** Opciones de currículum, servicios adicionales y condiciones.
+- **Horarios de atención:** Franja horaria para el indicador dinámico de cabecera.
 - **Métodos de pago:** Opciones y modalidades aceptadas.
+
+---
+
+## Vista Previa al Compartir (Open Graph)
+
+La imagen social para WhatsApp y redes se ubica en `public/og-cv.jpg` (1200×630 píxeles, optimizada para rápida previsualización).
+
+Las etiquetas Open Graph en `index.html` están configuradas para el dominio de producción (`https://cv.pediloaqui.online/`). Tras publicar o actualizar:
+1. Validar la URL en el depurador de Facebook/Meta para refrescar la caché.
+2. Si WhatsApp conserva en caché la vista previa anterior, puede probarse compartiendo con un parámetro de versión (ej. `?v=2`).
 
 ---
 
 ## Despliegue
 
-La aplicación es una Single Page Application (SPA). Al desplegar en plataformas como **Cloudflare Pages**, **Vercel** o **Netlify**:
+La aplicación es una Single Page Application (SPA):
 
-1. Ejecutar el comando de construcción: `npm run build`
-2. Configurar la carpeta de salida (output directory): `dist`
-3. Asegurar la regla de reescritura (*rewrite*) para que todas las rutas apunten a `/index.html`.
+1. Ejecutar la compilación: `npm run build`
+2. Carpeta de publicación (output directory): `dist`
+3. Configurar la regla de reescritura (*rewrite*) para que todas las rutas se dirijan a `/index.html`.

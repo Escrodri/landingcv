@@ -1,13 +1,13 @@
 // ============================================================
 // RUBROS Y CAMPAÑAS
 // Cada anuncio apunta a la URL de su rubro:
-//   tucv.pediloaqui.online/                → general
-//   tucv.pediloaqui.online/repositor
-//   tucv.pediloaqui.online/cajero
-//   tucv.pediloaqui.online/chofer
-//   tucv.pediloaqui.online/guardia
-//   tucv.pediloaqui.online/primer-empleo
-//   tucv.pediloaqui.online/encargado
+//   cv.pediloaqui.online/                → general
+//   cv.pediloaqui.online/repositor
+//   cv.pediloaqui.online/cajero
+//   cv.pediloaqui.online/chofer
+//   cv.pediloaqui.online/guardia
+//   cv.pediloaqui.online/primer-empleo
+//   cv.pediloaqui.online/encargado
 //
 // Opcional: agregá ?ref=AN1 a la URL del anuncio. El código viaja en el
 // mensaje de WhatsApp y así sabés qué anuncio te trajo cada cliente.

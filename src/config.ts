@@ -5,7 +5,7 @@
 /** Número de WhatsApp, formato internacional sin "+" ni espacios (ej: 595981123456). */
 export const WHATSAPP_NUMBER = "595984177265";
 
-export const DOMINIO = "tucv.pediloaqui.online";
+export const DOMINIO = "cv.pediloaqui.online";
 
 /** Tiempo de entrega que se promete (CV Clásico). */
 export const ENTREGA = "menos de 2 horas";
