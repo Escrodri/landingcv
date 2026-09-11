@@ -1,65 +1,104 @@
-# pediloaquí — tucv.pediloaqui.online
+# Landing Page — Confección de Currículums
 
-Página de venta de currículums por WhatsApp para tráfico de Meta Ads (Paraguay).
-Público: gente que busca empleo ya y no tiene compu o no sabe redactar.
-Promesa: **CV en menos de 2 horas, desde Gs. 35.000.** Cobro: **seña del 50 % para empezar, el resto al recibir el PDF**.
-Tipos de CV (pago único, nunca "plan"): CV Clásico Gs. 35.000 · CV Harvard a prueba de ATS Gs. 50.000 · Nota de presentación +Gs. 15.000.
+Landing page moderna y de alta conversión desarrollada para la oferta de servicios de diseño y redacción de currículums profesionales, con contacto directo e integración vía WhatsApp.
 
-**React 19 + TypeScript + Vite + Tailwind CSS v4** — SPA, sin SSR.
+---
 
-## Desarrollo
+## Características
 
-```sh
-npm install
-npm run dev      # http://localhost:5173
-npm run format   # formatear antes de subir
-npm run build    # genera dist/
+- **Diseño orientado a conversión:** Interfaz atractiva y optimizada para dispositivos móviles (mobile-first).
+- **Segmentación por rubros:** Soporte de rutas dinámicas para campañas específicas según el área laboral del postulante.
+- **Integración con WhatsApp:** Generación automática de mensajes personalizados y seguimiento de parámetros de referencia (`?ref=`).
+- **Disponibilidad en tiempo real:** Detección automática del estado del servicio ("Atendiendo ahora" o próximo horario de apertura) según la hora local.
+- **Rendimiento y SEO:** Carga ultrarrápida, metaetiquetas Open Graph completas, favicon multirresolución y soporte para Pixel de seguimiento.
+
+---
+
+## Tecnologías
+
+- **Framework:** [React 19](https://react.dev/)
+- **Lenguaje:** [TypeScript](https://www.typescriptlang.org/)
+- **Empaquetador y entorno:** [Vite](https://vite.dev/)
+- **Estilos:** [Tailwind CSS v4](https://tailwindcss.com/)
+- **Enrutamiento:** [React Router](https://reactrouter.com/)
+
+---
+
+## Comenzando
+
+### Requisitos previos
+
+- [Node.js](https://nodejs.org/) (versión 18 o superior recomendada)
+- npm, pnpm o yarn
+
+### Instalación
+
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/Escrodri/landingcv.git
+   cd landingcv
+   ```
+
+2. Instalar dependencias:
+   ```bash
+   npm install
+   ```
+
+3. Iniciar el entorno de desarrollo:
+   ```bash
+   npm run dev
+   ```
+   La aplicación estará disponible en `http://localhost:5173`.
+
+---
+
+## Scripts Disponibles
+
+| Comando | Descripción |
+| :--- | :--- |
+| `npm run dev` | Inicia el servidor de desarrollo local con Vite. |
+| `npm run build` | Valida tipos con TypeScript y compila la aplicación para producción en `dist/`. |
+| `npm run preview` | Previsualiza localmente la versión de producción generada. |
+| `npm run lint` | Analiza el código fuente con ESLint. |
+| `npm run format` | Aplica formato al código con Prettier. |
+| `npm run gen:assets` | Genera íconos y favicons en múltiples resoluciones desde los SVG fuente. |
+
+---
+
+## Estructura del Proyecto
+
+```text
+├── public/              # Favicons, manifest, imágenes sociales y estáticos
+├── scripts/             # Herramientas para generación y optimización de assets
+├── src/
+│   ├── assets/          # Imágenes de ejemplos de CV, logos y recursos visuales
+│   ├── pages/           # Vistas principales (Home, NotFound, etc.)
+│   ├── campanias.ts     # Configuración de titulares y textos por cada rubro
+│   ├── config.ts        # Datos del servicio (contacto, precios, horarios, entregas)
+│   ├── styles.css       # Configuración global y tokens de estilo
+│   ├── App.tsx          # Definición de rutas de la aplicación
+│   └── main.tsx         # Punto de entrada de la aplicación
+├── index.html           # Plantilla HTML principal
+└── vite.config.ts       # Configuración de Vite y plugins
 ```
 
-## Configuración (lo que más vas a tocar)
+---
 
-`src/config.ts`:
+## Configuración del Servicio
 
-- `WHATSAPP_NUMBER` — tu número real (ej: `595981123456`)
-- `TIPOS_CV` (nombre, precio, qué incluye), `NOTA` (extra), `ENTREGA`, `HORARIO`, `PAGOS`, `sena()` (cálculo de la mitad)
+Toda la parametrización del negocio se gestiona de forma centralizada en `src/config.ts`:
 
-El encabezado muestra "Atendiendo ahora" o "Respondemos desde las 8:00" según la hora de Paraguay.
+- **Canal de atención:** Número y enlace directo para recepción de solicitudes vía WhatsApp.
+- **Servicios y precios:** Catálogo de opciones de CV, detalles incluidos y extras disponibles.
+- **Horarios de atención:** Franja horaria para el indicador dinámico de respuesta en la cabecera.
+- **Métodos de pago:** Opciones y modalidades aceptadas.
 
-## Rubros y anuncios
+---
 
-`src/campanias.ts` — un titular por rubro. Cada anuncio apunta a su URL:
+## Despliegue
 
-`/` · `/repositor` · `/cajero` · `/chofer` · `/guardia` · `/primer-empleo` · `/encargado`
+La aplicación es una Single Page Application (SPA). Al desplegar en plataformas como **Cloudflare Pages**, **Vercel** o **Netlify**:
 
-Agregá `?ref=CODIGO` a la URL del anuncio: el código viaja en el mensaje de WhatsApp.
-Un rubro desconocido muestra la versión general (no se pierde tráfico por un error de tipeo).
-
-## Marketing
-
-- `marketing/CAMPANAS.md` — textos de anuncios, URLs, qué medir
-- `marketing/WHATSAPP.md` — bienvenida, respuestas rápidas y etiquetas para atender rápido
-- `marketing/*.png` — creativos listos (feed 1080×1080, historia 1080×1920, uno por rubro)
-- `marketing/tarjeta-precios-whatsapp.png` — tarjeta de precios para respuestas rápidas, estado y catálogo
-
-## Pixel de Meta
-
-Pegá el código base del Pixel en `index.html` (hay un comentario marcando el lugar).
-Los botones de WhatsApp ya disparan el evento `Contact`. Optimizá las campañas por ese evento.
-
-## Identidad
-
-- Isotipo: cursor con destellos de clic, negro sobre amarillo `#FFC83D`
-- Botones: verde WhatsApp `#25D366` con texto oscuro `#062B1B` (el blanco no se lee)
-- Texto: azul marino `#1B2530` · Fuente: Poppins
-- `public/favicon.svg` es la fuente del ícono → `npm run gen:assets` regenera PNG e ICO
-
-## Archivos viejos que se pueden borrar
-
-Ya no se usan: `src/assets/cv-harvard.jpg`, `cv-moderno.jpg`, `cv-ejecutivo.jpg`, `scripts/og-image.svg`.
-
-## Deploy
-
-`npm run build` → subir `dist/` a Netlify, Vercel o Cloudflare Pages.
-SPA: configurá el rewrite de todas las rutas a `/index.html`.
-Apuntá `tucv.pediloaqui.online` (CNAME) al hosting.
-Después de publicar, pasá la URL por el [Depurador de Facebook](https://developers.facebook.com/tools/debug/).
+1. Ejecutar el comando de construcción: `npm run build`
+2. Configurar la carpeta de salida (output directory): `dist`
+3. Asegurar la regla de reescritura (*rewrite*) para que todas las rutas apunten a `/index.html`.
