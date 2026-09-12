@@ -601,10 +601,7 @@ export default function Home() {
                   className="h-6 w-6 flex-none accent-ink"
                 />
                 <span className="min-w-0 flex-1">
-                  <span className="block text-lg font-bold leading-tight">
-                    <span aria-hidden="true">✉️ </span>
-                    {NOTA.nombre}
-                  </span>
+                  <span className="block text-lg font-bold leading-tight">{NOTA.nombre}</span>
                   <span className="block text-sm text-ink/70">
                     Muchas empresas la piden junto al CV.
                   </span>
