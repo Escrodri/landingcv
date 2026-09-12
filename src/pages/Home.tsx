@@ -147,6 +147,7 @@ function WaButton({
   className = "",
   size = "lg",
   tipo = "clasico",
+  nombre,
   valor,
   donde,
   rubroNombre,
@@ -158,6 +159,7 @@ function WaButton({
   size?: "sm" | "lg";
   /** Qué CV se está pidiendo: define el valor que se le reporta a Meta. */
   tipo?: TipoCV["id"];
+  nombre?: string;
   valor?: number;
   /** Desde qué botón salió el clic (para leer los informes). */
   donde: string;
@@ -179,7 +181,7 @@ function WaButton({
         const t = tipoPorId(tipo);
         lead({
           tipo,
-          nombre: nombreCompleto(t),
+          nombre: nombre ?? nombreCompleto(t),
           valor: valor ?? t.precio,
           donde,
           rubro: rubroNombre,
@@ -577,6 +579,7 @@ export default function Home() {
                         })}
                         className="w-full"
                         tipo={t.id}
+                        nombre={`${nombreCompleto(t)}${conNota ? ` + ${NOTA.nombre}` : ""}`}
                         valor={total}
                         donde={`precios-${t.id}${conNota ? "-nota" : ""}`}
                         rubroNombre={rubro?.nombre}
