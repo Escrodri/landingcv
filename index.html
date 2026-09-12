@@ -53,9 +53,36 @@
     />
 
     <!--
-      PIXEL DE META: pegá acá el código base del Pixel (Administrador de eventos).
-      Los botones de WhatsApp ya envían el evento "Contact" automáticamente.
+      PIXEL DE META — código base (id 978511738604905).
+      Dispara PageView al cargar. El resto de los eventos sale de src/pixel.ts.
+      En localhost no se carga: los datos de prueba ensucian el Administrador de eventos.
     -->
+    <script>
+      (function () {
+        if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) {
+          window.fbq = function () {};
+          return;
+        }
+        !(function (f, b, e, v, n, t, s) {
+          if (f.fbq) return;
+          n = f.fbq = function () {
+            n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+          };
+          if (!f._fbq) f._fbq = n;
+          n.push = n;
+          n.loaded = !0;
+          n.version = "2.0";
+          n.queue = [];
+          t = b.createElement(e);
+          t.async = !0;
+          t.src = v;
+          s = b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t, s);
+        })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+        fbq("init", "978511738604905");
+        fbq("track", "PageView");
+      })();
+    </script>
 
     <script type="application/ld+json">
       {
@@ -84,6 +111,14 @@
     </script>
   </head>
   <body>
+    <noscript
+      ><img
+        height="1"
+        width="1"
+        style="display: none"
+        alt=""
+        src="https://www.facebook.com/tr?id=978511738604905&ev=PageView&noscript=1"
+    /></noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

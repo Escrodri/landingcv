@@ -35,12 +35,14 @@ Landing page moderna y de alta conversión para la oferta de servicios de diseñ
 ### Instalación
 
 1. Clonar el repositorio:
+
    ```bash
    git clone https://github.com/Escrodri/landingcv.git
    cd landingcv
    ```
 
 2. Instalar dependencias:
+
    ```bash
    npm install
    ```
@@ -55,14 +57,14 @@ Landing page moderna y de alta conversión para la oferta de servicios de diseñ
 
 ## Scripts Disponibles
 
-| Comando | Descripción |
-| :--- | :--- |
-| `npm run dev` | Inicia el servidor de desarrollo local con Vite. |
-| `npm run build` | Valida tipos con TypeScript y compila la aplicación para producción en `dist/`. |
-| `npm run preview` | Previsualiza localmente la versión de producción generada. |
-| `npm run lint` | Analiza el código fuente con ESLint. |
-| `npm run format` | Aplica formato al código con Prettier. |
-| `npm run gen:assets` | Genera íconos y favicons en múltiples resoluciones desde los SVG fuente. |
+| Comando              | Descripción                                                                     |
+| :------------------- | :------------------------------------------------------------------------------ |
+| `npm run dev`        | Inicia el servidor de desarrollo local con Vite.                                |
+| `npm run build`      | Valida tipos con TypeScript y compila la aplicación para producción en `dist/`. |
+| `npm run preview`    | Previsualiza localmente la versión de producción generada.                      |
+| `npm run lint`       | Analiza el código fuente con ESLint.                                            |
+| `npm run format`     | Aplica formato al código con Prettier.                                          |
+| `npm run gen:assets` | Genera íconos y favicons en múltiples resoluciones desde los SVG fuente.        |
 
 ---
 
@@ -97,11 +99,28 @@ La parametrización del negocio se gestiona de forma centralizada en `src/config
 
 ---
 
+## Medición (Pixel de Meta)
+
+Pixel `978511738604905` instalado. El código base está en `index.html` y los
+eventos en `src/pixel.ts`:
+
+| Evento        | Cuándo                                                         |
+| :------------ | :------------------------------------------------------------- |
+| `PageView`    | Cada vista, incluidas las rutas por rubro                      |
+| `ViewContent` | La persona llegó a la sección de precios                       |
+| `Lead`        | Tocó un botón de WhatsApp (evento a optimizar en los anuncios) |
+
+En `localhost` el Pixel no se carga, para no ensuciar el Administrador de
+eventos. Detalle completo, verificación y siguientes pasos en [`PIXEL.md`](./PIXEL.md).
+
+---
+
 ## Vista Previa al Compartir (Open Graph)
 
 La imagen social para WhatsApp y redes se ubica en `public/og-cv.jpg` (1200×630 píxeles, optimizada para rápida previsualización).
 
 Las etiquetas Open Graph en `index.html` están configuradas para el dominio de producción (`https://cv.pediloaqui.online/`). Tras publicar o actualizar:
+
 1. Validar la URL en el depurador de Facebook/Meta para refrescar la caché.
 2. Si WhatsApp conserva en caché la vista previa anterior, puede probarse compartiendo con un parámetro de versión (ej. `?v=2`).
 
@@ -113,4 +132,4 @@ La aplicación es una Single Page Application (SPA):
 
 1. Ejecutar la compilación: `npm run build`
 2. Carpeta de publicación (output directory): `dist`
-3. Configurar la regla de reescritura (*rewrite*) para que todas las rutas se dirijan a `/index.html`.
+3. Configurar la regla de reescritura (_rewrite_) para que todas las rutas se dirijan a `/index.html`.

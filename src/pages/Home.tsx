@@ -21,6 +21,7 @@ import {
   wa,
   type TipoCV,
 } from "@/config";
+import { lead, pageView, viewContent, visitanteId } from "@/pixel";
 
 /** Minúscula solo en la primera letra (no rompe siglas como ATS ni nombres propios). */
 const minus = (s: string) => `${s.charAt(0).toLowerCase()}${s.slice(1)}`;
@@ -124,25 +125,45 @@ function Check({ className = "text-wa-dark" }: { className?: string }) {
 
 const ICONOS_PASOS: ReactNode[] = [
   // dedo tocando
-  <path key="a" d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10m0-1.5a1.5 1.5 0 0 1 3 0V11m0-1a1.5 1.5 0 0 1 3 0v4.5a6 6 0 0 1-6 6h-.6a6 6 0 0 1-4.7-2.3L4.5 15.3a1.6 1.6 0 0 1 2.4-2.1L9 15" />,
+  <path
+    key="a"
+    d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10m0-1.5a1.5 1.5 0 0 1 3 0V11m0-1a1.5 1.5 0 0 1 3 0v4.5a6 6 0 0 1-6 6h-.6a6 6 0 0 1-4.7-2.3L4.5 15.3a1.6 1.6 0 0 1 2.4-2.1L9 15"
+  />,
   // globo de chat
-  <path key="b" d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12ZM8.5 10.5h7m-7 3.5h4.5" />,
+  <path
+    key="b"
+    d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12ZM8.5 10.5h7m-7 3.5h4.5"
+  />,
   // documento con check
-  <path key="c" d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Zm0 0v5h5M9 14.5l2 2 4-4.5" />,
+  <path
+    key="c"
+    d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Zm0 0v5h5M9 14.5l2 2 4-4.5"
+  />,
 ];
-
-type FbqWindow = Window & { fbq?: (...args: unknown[]) => void };
 
 function WaButton({
   texto,
   children,
   className = "",
   size = "lg",
+  tipo = "clasico",
+  valor,
+  donde,
+  rubroNombre,
+  anuncio,
 }: {
   texto: string;
   children: ReactNode;
   className?: string;
   size?: "sm" | "lg";
+  /** Qué CV se está pidiendo: define el valor que se le reporta a Meta. */
+  tipo?: TipoCV["id"];
+  valor?: number;
+  /** Desde qué botón salió el clic (para leer los informes). */
+  donde: string;
+  rubroNombre?: string | undefined;
+  /** Código del anuncio (?ref=) que trajo a la persona. */
+  anuncio?: string | null | undefined;
 }) {
   const sizes =
     size === "lg"
@@ -153,8 +174,18 @@ function WaButton({
       href={wa(texto)}
       target="_blank"
       rel="noopener noreferrer"
-      // Si instalás el Pixel de Meta en index.html, cada toque cuenta como "Contact".
-      onClick={() => (window as FbqWindow).fbq?.("track", "Contact")}
+      // Cada toque cuenta como "Lead" en el Pixel, con el precio del CV elegido.
+      onClick={() => {
+        const t = tipoPorId(tipo);
+        lead({
+          tipo,
+          nombre: nombreCompleto(t),
+          valor: valor ?? t.precio,
+          donde,
+          rubro: rubroNombre,
+          ref: anuncio,
+        });
+      }}
       className={`inline-flex items-center justify-center rounded-2xl bg-wa font-bold text-wa-ink shadow-lg shadow-wa/30 transition-transform duration-150 hover:brightness-105 active:scale-[0.97] ${sizes} ${className}`}
     >
       <WaIcon className={size === "lg" ? "h-5 w-5 min-[360px]:h-6 min-[360px]:w-6" : "h-5 w-5"} />
@@ -162,7 +193,6 @@ function WaButton({
     </a>
   );
 }
-
 
 function Microcopy({ className = "" }: { className?: string }) {
   return (
@@ -206,14 +236,21 @@ export default function Home() {
     const extra = opts.nota ? ` + ${NOTA.nombre.toLowerCase()}` : "";
     const total = t.precio + (opts.nota ? NOTA.precio : 0);
     const base = `Hola, quiero mi ${nombre}${de}${extra} (${gs(total)}) 👋`;
-    return ref ? `${base} [${ref}]` : base;
+    // Código al final del mensaje: [anuncio·visitante]. Sirve para saber qué
+    // anuncio trajo a la persona y, más adelante, para avisarle a Meta que
+    // ese mismo clic terminó en venta (ver PIXEL.md).
+    const codigo = ref ? `${ref}·${visitanteId()}` : visitanteId();
+    return `${base} [${codigo}]`;
   };
   const mensajeRubro = () => mensaje("clasico", { rubroNombre: rubro?.nombre });
 
   const ejemplos: Ejemplo[] = [
-    ...(rubro ? [rubro, ...RUBROS.filter((r) => r !== rubro)] : RUBROS).map(
-      (r): Ejemplo => ({ key: r.slug, titulo: r.nombre, img: r.img, tipo: "clasico" }),
-    ),
+    ...(rubro ? [rubro, ...RUBROS.filter((r) => r !== rubro)] : RUBROS).map((r): Ejemplo => ({
+      key: r.slug,
+      titulo: r.nombre,
+      img: r.img,
+      tipo: "clasico",
+    })),
     ...EJEMPLOS_HARVARD,
   ];
 
@@ -235,6 +272,34 @@ export default function Home() {
     document.title = rubro
       ? `CV de ${rubro.nombre.toLowerCase()} en ${ENTREGA} · ${PRECIO} | ${DOMINIO}`
       : `Tu currículum en ${ENTREGA} · ${PRECIO} | ${DOMINIO}`;
+  }, [rubro]);
+
+  // PageView al cambiar de rubro. El primero ya lo manda el código base del
+  // Pixel en index.html, así que se saltea para no contarlo dos veces.
+  const primerRender = useRef(true);
+  useEffect(() => {
+    if (primerRender.current) {
+      primerRender.current = false;
+      return;
+    }
+    pageView();
+  }, [slug]);
+
+  // ViewContent: la persona llegó a ver los precios. Una sola vez por visita.
+  const precios = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = precios.current;
+    if (!el || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e?.isIntersecting) return;
+        viewContent({ rubro: rubro?.nombre });
+        io.disconnect();
+      },
+      { threshold: 0.4 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
   }, [rubro]);
 
   return (
@@ -290,7 +355,13 @@ export default function Home() {
               </div>
 
               <div ref={heroCta} className="mt-5">
-                <WaButton texto={mensajeRubro()} className="w-full sm:w-auto">
+                <WaButton
+                  texto={mensajeRubro()}
+                  className="w-full sm:w-auto"
+                  donde="hero"
+                  rubroNombre={rubro?.nombre}
+                  anuncio={ref}
+                >
                   Quiero mi CV · {PRECIO}
                 </WaButton>
                 <p className="mt-2 flex items-start gap-2 text-sm font-medium">
@@ -307,13 +378,22 @@ export default function Home() {
 
               <ul className="mt-5 grid grid-cols-3 gap-2 text-center text-xs font-semibold sm:text-sm">
                 <li className="rounded-xl bg-white px-2 py-3 ring-1 ring-line">
-                  <span className="block text-xl" aria-hidden="true">⏱</span>Listo en 2 h
+                  <span className="block text-xl" aria-hidden="true">
+                    ⏱
+                  </span>
+                  Listo en 2 h
                 </li>
                 <li className="rounded-xl bg-white px-2 py-3 ring-1 ring-line">
-                  <span className="block text-xl" aria-hidden="true">💬</span>Todo por WhatsApp
+                  <span className="block text-xl" aria-hidden="true">
+                    💬
+                  </span>
+                  Todo por WhatsApp
                 </li>
                 <li className="rounded-xl bg-white px-2 py-3 ring-1 ring-line">
-                  <span className="block text-xl" aria-hidden="true">🤝</span>Mitad al empezar
+                  <span className="block text-xl" aria-hidden="true">
+                    🤝
+                  </span>
+                  Mitad al empezar
                 </li>
               </ul>
             </div>
@@ -373,6 +453,10 @@ export default function Home() {
                       })}
                       size="sm"
                       className="mt-3 w-full"
+                      tipo={e.tipo}
+                      donde={`ejemplo-${e.key}`}
+                      rubroNombre={e.titulo}
+                      anuncio={ref}
                     >
                       Quiero uno así
                     </WaButton>
@@ -384,7 +468,12 @@ export default function Home() {
         </section>
 
         {/* PRECIOS — mismo diseño que la tarjeta de precios de WhatsApp */}
-        <section id="precios" aria-labelledby="precio-title" className="bg-frost py-12">
+        <section
+          id="precios"
+          ref={precios}
+          aria-labelledby="precio-title"
+          className="bg-frost py-12"
+        >
           <div className="mx-auto max-w-3xl px-4 sm:px-6">
             <h2
               id="precio-title"
@@ -393,8 +482,7 @@ export default function Home() {
               Precios
             </h2>
             <p className="mt-3 text-base text-ink/70 md:text-lg">
-              Pago único · <strong className="text-ink">No es mensualidad</strong> ·{" "}
-              {COMO_SE_PAGA}
+              Pago único · <strong className="text-ink">No es mensualidad</strong> · {COMO_SE_PAGA}
             </p>
 
             <div className="mt-6 grid gap-4">
@@ -433,12 +521,16 @@ export default function Home() {
                             >
                               {gs(total).replace("Gs. ", "")}
                             </span>
-                            <span className={`text-sm ${oscuro ? "text-white/70" : "text-muted-foreground"}`}>
+                            <span
+                              className={`text-sm ${oscuro ? "text-white/70" : "text-muted-foreground"}`}
+                            >
                               guaraníes{conNota ? " · con nota" : ""}
                             </span>
                           </p>
                         </div>
-                        <p className={`mt-2 text-sm leading-snug sm:text-base ${oscuro ? "text-white/80" : "text-ink/75"}`}>
+                        <p
+                          className={`mt-2 text-sm leading-snug sm:text-base ${oscuro ? "text-white/80" : "text-ink/75"}`}
+                        >
                           {t.resumen}
                         </p>
                         <p
@@ -451,7 +543,9 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <details className={`faq-item mx-4 border-t sm:mx-5 ${oscuro ? "border-white/15" : "border-line"}`}>
+                    <details
+                      className={`faq-item mx-4 border-t sm:mx-5 ${oscuro ? "border-white/15" : "border-line"}`}
+                    >
                       <summary className="flex min-h-11 items-center justify-between gap-3 py-2 text-sm font-semibold">
                         ¿Qué incluye?
                         <svg
@@ -482,6 +576,11 @@ export default function Home() {
                           rubroNombre: t.id === "clasico" ? rubro?.nombre : undefined,
                         })}
                         className="w-full"
+                        tipo={t.id}
+                        valor={total}
+                        donde={`precios-${t.id}${conNota ? "-nota" : ""}`}
+                        rubroNombre={rubro?.nombre}
+                        anuncio={ref}
                       >
                         Quiero este · {gs(total)}
                       </WaButton>
@@ -507,7 +606,9 @@ export default function Home() {
                     Muchas empresas la piden junto al CV.
                   </span>
                 </span>
-                <span className="flex-none text-xl font-extrabold">+{gs(NOTA.precio).replace("Gs. ", "")}</span>
+                <span className="flex-none text-xl font-extrabold">
+                  +{gs(NOTA.precio).replace("Gs. ", "")}
+                </span>
               </label>
             </div>
 
@@ -526,7 +627,16 @@ export default function Home() {
               href={wa(mensajeRubro())}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => (window as FbqWindow).fbq?.("track", "Contact")}
+              onClick={() =>
+                lead({
+                  tipo: "clasico",
+                  nombre: CLASICO.nombre,
+                  valor: CLASICO.precio,
+                  donde: "banda-empezar",
+                  rubro: rubro?.nombre,
+                  ref,
+                })
+              }
               className="mt-4 flex items-center gap-3 rounded-3xl bg-wa p-5 text-lg leading-snug text-wa-ink shadow-lg shadow-wa/30 transition-transform active:scale-[0.98]"
             >
               <WaIcon className="h-8 w-8" />
@@ -590,15 +700,13 @@ export default function Home() {
                 La mitad para empezar, la otra mitad al ver tu CV
               </h2>
               <p className="mt-3 text-lg leading-snug text-ink/80">
-                Con la seña arrancamos. Te mandamos una vista previa por WhatsApp y, cuando te gusta,
-                pagás la otra mitad y te enviamos el PDF final, sin marca de agua.
+                Con la seña arrancamos. Te mandamos una vista previa por WhatsApp y, cuando te
+                gusta, pagás la otra mitad y te enviamos el PDF final, sin marca de agua.
               </p>
               <p className="mt-3 text-base font-semibold text-wa-dark">
                 ¿Algo no te gusta? Lo corregimos antes de que pagues el resto.
               </p>
-              <p className="mt-4 text-base font-semibold">
-                {PAGOS.join(" · ")}
-              </p>
+              <p className="mt-4 text-base font-semibold">{PAGOS.join(" · ")}</p>
             </div>
           </div>
         </section>
@@ -635,19 +743,27 @@ export default function Home() {
         {/* CIERRE */}
         <section className="bg-frost">
           <div className="mx-auto max-w-3xl px-4 py-14 text-center sm:px-6">
-          <h2 className="text-2xl font-extrabold md:text-4xl">Que no se te pase la vacancia.</h2>
-          <p className="mx-auto mt-3 max-w-md text-lg text-ink/80">
-            {abierto
-              ? `Escribinos ahora y en ${ENTREGA} tenés tu currículum listo para entregar.`
-              : "Dejanos tu mensaje ahora y a primera hora arrancamos con tu currículum."}
-          </p>
-          <div className="mt-6 flex flex-col items-center gap-2">
-            <WaButton texto={mensajeRubro()} className="w-full sm:w-auto">
-              Quiero mi CV · {PRECIO}
-            </WaButton>
-            <Microcopy />
-            <p className="text-sm text-muted-foreground">Atendemos {HORARIO.texto.toLowerCase()}.</p>
-          </div>
+            <h2 className="text-2xl font-extrabold md:text-4xl">Que no se te pase la vacancia.</h2>
+            <p className="mx-auto mt-3 max-w-md text-lg text-ink/80">
+              {abierto
+                ? `Escribinos ahora y en ${ENTREGA} tenés tu currículum listo para entregar.`
+                : "Dejanos tu mensaje ahora y a primera hora arrancamos con tu currículum."}
+            </p>
+            <div className="mt-6 flex flex-col items-center gap-2">
+              <WaButton
+                texto={mensajeRubro()}
+                className="w-full sm:w-auto"
+                donde="cierre"
+                rubroNombre={rubro?.nombre}
+                anuncio={ref}
+              >
+                Quiero mi CV · {PRECIO}
+              </WaButton>
+              <Microcopy />
+              <p className="text-sm text-muted-foreground">
+                Atendemos {HORARIO.texto.toLowerCase()}.
+              </p>
+            </div>
           </div>
         </section>
       </main>
@@ -663,7 +779,13 @@ export default function Home() {
         }`}
         inert={!mostrarFlotante}
       >
-        <WaButton texto={mensajeRubro()} className="w-full">
+        <WaButton
+          texto={mensajeRubro()}
+          className="w-full"
+          donde="flotante"
+          rubroNombre={rubro?.nombre}
+          anuncio={ref}
+        >
           Pedí tu CV · {PRECIO}
         </WaButton>
       </div>

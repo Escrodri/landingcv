@@ -69,7 +69,8 @@ export const TIPOS_CV: TipoCV[] = [
 export const NOTA = {
   nombre: "Nota de presentación",
   precio: 15000,
-  descripcion: "Una carta corta para la empresa, hecha para el puesto. Muchas la piden junto al CV.",
+  descripcion:
+    "Una carta corta para la empresa, hecha para el puesto. Muchas la piden junto al CV.",
 };
 
 /**
