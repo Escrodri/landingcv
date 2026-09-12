@@ -101,7 +101,7 @@ La parametrización del negocio se gestiona de forma centralizada en `src/config
 
 ## Medición (Pixel de Meta)
 
-Pixel `978511738604905` instalado. El código base está en `index.html` y los
+Pixel `1818002972544952` instalado. El código base está en `index.html` y los
 eventos en `src/pixel.ts`:
 
 | Evento        | Cuándo                                                         |

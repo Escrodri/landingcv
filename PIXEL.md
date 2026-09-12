@@ -1,6 +1,6 @@
 # Pixel de Meta — cv.pediloaqui.online
 
-Pixel **978511738604905**, instalado y midiendo. Este documento explica qué mide
+Pixel **1818002972544952**, instalado y midiendo. Este documento explica qué mide
 hoy, cómo comprobarlo y cómo cerrar después el circuito de las ventas.
 
 ---

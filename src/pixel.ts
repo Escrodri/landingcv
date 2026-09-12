@@ -14,7 +14,7 @@
 // con la API de Conversiones desde el bot (ver PIXEL.md).
 // ============================================================
 
-export const PIXEL_ID = "978511738604905";
+export const PIXEL_ID = "1818002972544952";
 
 type Fbq = (...args: unknown[]) => void;
 type FbqWindow = Window & { fbq?: Fbq };
@@ -100,24 +100,14 @@ type Params = Record<string, unknown>;
 export function track(evento: string, params?: Params, eventID?: string): void {
   const f = fbq();
   if (!f) return;
-  if (eventID) {
-    f("track", evento, params ?? {}, { eventID });
-  } else if (params) {
-    f("track", evento, params);
-  } else {
-    f("track", evento);
-  }
+  f("track", evento, params, eventID ? { eventID } : undefined);
 }
 
 /** Evento propio (no estándar de Meta). Sirve para mirar detalle en informes. */
 export function trackCustom(evento: string, params?: Params): void {
   const f = fbq();
   if (!f) return;
-  if (params) {
-    f("trackCustom", evento, params);
-  } else {
-    f("trackCustom", evento);
-  }
+  f("trackCustom", evento, params);
 }
 
 /** PageView manual: las rutas por rubro no recargan la página. */
